@@ -1,4 +1,4 @@
-.idea/
+.idea
 ### Ansible template
 *.retry
 ### macOS template
