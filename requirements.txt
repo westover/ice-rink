@@ -1,0 +1,2 @@
+tornado
+git+https://github.com/westover/collect-social.git@master
