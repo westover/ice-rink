@@ -1,0 +1,27 @@
+---
+name: pipeline_topology
+
+workers: 1
+
+topology:
+  - spout:
+      name: twitter-spout
+      module: pipeline.spouts.twitter_spout
+      parallelism_hint: 2
+      
+  - spout:
+      name: facebook-spout
+      module: pipeline.spouts.facebook_spout
+      parallelism_hint: 2
+
+  - bolt:
+     name: es-pub-bolt
+     groupings:
+       - local_or_shuffle_grouping:
+           component: twitter-spout
+           stream: default
+       - local_or_shuffle_grouping:
+           component: facebook-spout
+           stream: default
+     module: pipeline.bolts.elasticsearch_sink_bolt
+     parallelism_hint: 1
