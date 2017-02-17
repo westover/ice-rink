@@ -1,0 +1,35 @@
+FROM ubuntu:14.04
+
+WORKDIR /root/ice-rink
+
+RUN apt-get update -qq && apt-get install -yqq build-essential \
+  supervisor \
+  redis-server \
+  thrift-compiler \
+  libpq-dev python-dev libmysqlclient-dev python-mysqldb \
+  python-pip \
+  openjdk-7-jre-headless \
+  wget vim git
+
+# setup storm environment variables
+ENV STORM_VERSION 0.9.6
+ENV STORM_HOME /opt/apache-storm
+
+# download and install storm
+RUN wget http://apache.mirrors.ovh.net/ftp.apache.org/dist/storm/apache-storm-$STORM_VERSION/apache-storm-$STORM_VERSION.tar.gz && \
+tar -xzvf apache-storm-$STORM_VERSION.tar.gz -C /opt && ln -s $STORM_HOME-$STORM_VERSION $STORM_HOME && \
+rm apache-storm-$STORM_VERSION.tar.gz && \
+ln -s $STORM_HOME/bin/storm /usr/local/bin/storm
+
+RUN apt-get install -yqq libldap2-dev libsasl2-dev
+
+# fix error in "pip install cryptography" (http://askubuntu.com/questions/499714/error-installing-scrapy-in-virtualenv-using-pip)
+RUN apt-get install -yqq libffi-dev
+
+RUN apt-get install -y libopencv-dev python-opencv
+
+# prepare log directory for FVD Storm topologies
+RUN mkdir /var/log/storm
+
+COPY requirements.txt ./
+RUN pip install -r requirements.txt

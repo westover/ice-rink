@@ -1,0 +1,28 @@
+storm:
+  build: ./docker-images/storm
+  ports:
+    # supervisor
+    - 8000:8000
+    # ui
+    - 8080:8080
+    # zookeeper
+    - 2181:2181
+    # nimbus
+    - 3773:3773
+    - 3772:3772
+    - 6627:6627
+  volumes:
+   - .:/root/ice-rink
+
+
+# for pyleus build and local testing
+pyleus-service:
+  build: .
+  dockerfile: Dockerfile-pyleus
+  volumes:
+    - .:/root/ice-rink
+    - ~/.aws/credentials:/root/.aws/credentials
+    # Persist pyleus local Storm topology logs for investigation
+    - ./tmp/pyleus_local_storm_logs:/var/log/storm
+  environment:
+    - APP_ENV=dev-docker
